@@ -36,8 +36,9 @@ program encode_test
 
   print "('Encode-decode tests',/,'===================',/)"
 
-  ! Encode and decode several test vectors.  These are sorted vectors
-  ! of length N with elements in [ 0, 1, ..., M ].
+  ! Encode and decode several test vectors.  These are vectors of
+  ! length N with elements in [ 0, 1, ..., M-1 ] such that the sum of
+  ! all elements is M-1.
   x(1,:)  = [ 6, 0, 0, 0, 0 ]
   x(2,:)  = [ 0, 0, 0, 0, 6 ]
   x(3,:)  = [ 2, 2, 1, 1, 0 ]

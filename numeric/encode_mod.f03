@@ -10,18 +10,18 @@
 !   spaces for some dynamic models."  Journal of Economic Dynamics and
 !   Control 23 (8), 1077-1098.
 !
-! This module implements an encoding of the state space $Z(M,N)$
+! This module implements an encoding of the state space $Z(N,M)$
 ! consisting of all discrete approximations to probability
-! distributions on the interval $[0,1]$ with $M-1$ discrete regions
-! and $M$ endpoints.  The mass assigned to any of these $M$ endpoints
-! may take $N$ discrete values $0/(N-1), 1/(N-1), \dots, (N-1)/(N-1)$
+! distributions on the interval $[0,1]$ with $N-1$ discrete regions
+! and $N$ endpoints.  The mass assigned to any of these $N$ endpoints
+! may take $M$ discrete values $0/(M-1), 1/(M-1), \dots, (M-1)/(M-1)$
 ! such that the elements sum to one.
 !
 ! This encoding can be used, for example, to represent the space of
 ! all probability distributions or to represent the state space in a
 ! dynamic oligopoly model such as that of Ericson and Pakes (1995).
-! In the dynamic oligopoly example, with $N$ firms and $M$ possible
-! states, one can represent the state space using $Z(M,N+1)$.  The
+! In the dynamic oligopoly example, with $n$ firms and $L$ possible
+! states, one can represent the state space using $Z(L,n+1)$.  The
 ! $k$-th element of the state vector then represents the fraction of
 ! firms in state $k$.
 !
