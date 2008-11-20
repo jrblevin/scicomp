@@ -2,7 +2,7 @@ F03 = gfortran
 F03_FLAGS = -std=f2003 -O3 -Wall
 F03_DEBUG = -g -std=f2003 -Wall -ggdb -fbounds-check -Wconversion
 
-TARGETS = binenc_test
+TARGETS = binenc_test encode_test
 
 all: $(TARGETS)
 
@@ -10,6 +10,9 @@ all: $(TARGETS)
 	$(F03) $(F03_FLAGS) -c $<
 
 binenc_test: binenc_mod.o binenc_test.o
+	$(F03) $(F03_FLAGS) -o $@ $^
+
+encode_test: encode_mod.o encode_test.o
 	$(F03) $(F03_FLAGS) -o $@ $^
 
 clean:
