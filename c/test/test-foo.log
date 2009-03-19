@@ -1,0 +1,15 @@
+foo
+===
+
+1. Foo test...pass.
+2. Bar test...
+
+ASSERT_STRING_EQUAL failed:
+
+a = "xyz"
+
+b = "xzy"
+
+
+Tests passed: 1/2, (1 failed)
+Assertions: 4/5 (1 failed)
