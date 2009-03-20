@@ -84,7 +84,7 @@ static int test_assert_fail = 0;
     test_assert++;                                          \
     if (strcmp(a, b)) {                                     \
         printf("\n\nASSERT_STRING_EQUAL failed:\n");        \
-        printf("\na = %s\n\nb = %s\n\n", #a, #b);           \
+        printf("\na = %s\n\nb = %s\n\n", a, b);             \
         test_assert_fail++;                                 \
     }
 
