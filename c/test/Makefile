@@ -20,7 +20,7 @@ LIBS =
 
 all: $(TESTS) runtests
 
-%: %.c
+test-%: test-%.c
 	@$(CC) -o $@ $(CFLAGS) $(INCLUDE) $(LDFLAGS) $^ $(LIBS)
 
 runtests:
