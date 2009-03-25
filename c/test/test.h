@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TEST_H__
-#define __TEST_H__
+#ifndef TEST_H
+#define TEST_H
 
 #include <stdio.h>
 #include <string.h>
@@ -105,4 +105,4 @@ void print_results()
            n_assert - n_assert_fail, n_assert, n_assert_fail);
 }
 
-#endif /* __TEST_H__ */
+#endif /* TEST_H */
