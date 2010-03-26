@@ -2,7 +2,7 @@
 ! http://shootout.alioth.debian.org/
 !
 ! Contributed by Jason Blevins
-! Adapted from mandelbrot.f90 by Simon Geard
+! Adapted from Fortran versions by George R. Gonzalez and Simon Geard
 !
 ! ifort -O3 -o mandelbrot mandelbrot.f90
 program mandelbrot
@@ -15,12 +15,12 @@ program mandelbrot
   character(len=8) :: argv
   integer :: w, h, x, y, i, pos = 0, bit_num = 8
   integer(int8) :: byte = 0_int8
-  real(dp) :: inverse_w, inverse_h
-  complex(dp) :: Z, C
-  logical :: in_mandelbrot
+  real(dp) :: inv_w, inv_h, Zi, Zr, Ti, Tr, Cr, Ci
+  logical :: inside
   integer(int8), dimension(:), allocatable :: buf
 
-  call get_command_argument(1,argv)
+  ! read dimension from command line
+  call get_command_argument(1, argv)
   read(argv, *) w
   h = w
 
@@ -28,8 +28,8 @@ program mandelbrot
   allocate(buf(ceiling(w/8.0_dp) * h))
 
   ! precalculate constants
-  inverse_w = 2.0_dp / w
-  inverse_h = 2.0_dp / h
+  inv_w = 2.0_dp / w
+  inv_h = 2.0_dp / h
 
   ! pbm header
   write(*,'("P4",/,i0," ",i0)') w, h
@@ -38,19 +38,22 @@ program mandelbrot
      do x = 0, w - 1
         bit_num = bit_num - 1
 
-        C = cmplx(inverse_w*x-1.5_dp, inverse_h*y-1.0_dp, dp)
-        Z = cmplx(0.0_dp, 0.0_dp, dp)
-        in_mandelbrot = .true.
-        do i = 1, iter
-           Z = Z*Z + C
-           if (real(Z*conjg(Z), dp) > limit2) then
-              in_mandelbrot = .false.
-              exit
-           end if
+        Zr = 0.0_dp; Zi = 0.0_dp; Tr = 0.0_dp; Ti = 0.0_dp;
+        Cr = inv_w * x - 1.5_dp
+        Ci = inv_h * y - 1.0_dp
+        inside = .true.
+        i = 0
+        do while(i < iter .and. inside)
+           Zi = 2.0 * Zr * Zi + Ci
+           Zr = Tr - Ti + Cr
+           Ti = Zi * Zi
+           Tr = Zr * Zr
+           i = i + 1
+           inside = Tr + Ti <= limit2
         end do
 
         ! We're in the set, set this bit to 0
-        if (in_mandelbrot) byte = ibset(byte, bit_num)
+        if (inside) byte = ibset(byte, bit_num)
 
         if (bit_num == 0 .or. x == w - 1) then
            ! All bits set or end of row, so output bits
@@ -62,8 +65,7 @@ program mandelbrot
      end do
   end do
 
+  ! print output
   write(*, '(10000000a1)',advance='no') buf(1:pos)
-
   deallocate(buf)
-
 end program mandelbrot
