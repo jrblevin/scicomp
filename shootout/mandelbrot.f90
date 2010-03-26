@@ -13,22 +13,26 @@ program mandelbrot
   integer, parameter :: iter = 50
   real(dp), parameter :: limit2 = 4.0_dp
   character(len=8) :: argv
-  integer :: w, h, x, y, i, bit_num = 8
+  integer :: w, h, x, y, i, pos = 0, bit_num = 8
   integer(int8) :: byte = 0_int8
   real(dp) :: inverse_w, inverse_h
   complex(dp) :: Z, C
   logical :: in_mandelbrot
+  integer(int8), dimension(:), allocatable :: buf
 
   call get_command_argument(1,argv)
   read(argv, *) w
   h = w
 
+  ! allocate output buffer
+  allocate(buf(ceiling(w/8.0_dp) * h))
+
+  ! precalculate constants
   inverse_w = 2.0_dp / w
   inverse_h = 2.0_dp / h
 
-  ! Output pbm header
-  write(*,'(a)') 'P4'
-  write(*,'(i0,a,i0)') w,' ',h
+  ! pbm header
+  write(*,'("P4",/,i0," ",i0)') w, h
 
   do y = 0, h - 1
      do x = 0, w - 1
@@ -50,11 +54,16 @@ program mandelbrot
 
         if (bit_num == 0 .or. x == w - 1) then
            ! All bits set or end of row, so output bits
-           write(*,'(a1)',advance='no') char(byte)
+           pos = pos + 1
+           buf(pos) = byte
            byte = 0_int8
            bit_num = 8
         end if
      end do
   end do
+
+  write(*, '(10000000a1)',advance='no') buf(1:pos)
+
+  deallocate(buf)
 
 end program mandelbrot
