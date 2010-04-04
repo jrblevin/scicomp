@@ -1,4 +1,4 @@
-! cat.f03 -- cat in Fortran 2003
+! cat.f90 -- cat in Fortran 2003
 !
 ! Copyright (C) 2009 Jason R. Blevins
 ! All rights reserved.

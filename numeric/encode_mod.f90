@@ -1,4 +1,4 @@
-! encode_mod.f03 -- A module for encoding and decoding state vectors
+! encode_mod.f90 -- module for encoding and decoding state vectors
 !
 ! Copyright (C) 2008 Jason Blevins <jrblevin@sdf.lonestar.org>
 ! All rights reserved.

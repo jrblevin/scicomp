@@ -1,4 +1,4 @@
-! binenc_mod.f03 -- A Binomial-coefficient-based state encoding algorithm
+! binenc_mod.f90 -- A Binomial-coefficient-based state encoding algorithm
 !
 ! Copyright (C) 2008 Jason Blevins <jrblevin@sdf.lonestar.org>
 ! All rights reserved.
