@@ -1,27 +1,16 @@
 ! binenc_test.f03 -- A test program for binenc_mod.f03
+!
 ! Copyright (C) 2008 Jason Blevins <jrblevin@sdf.lonestar.org>
+! All rights reserved.
+!
+! This software may be modified and distributed under the terms
+! of the BSD license.  See the LICENSE file for details.
 !
 ! Description:
 !
 ! A short program which tests for correctness of the encoding
 ! algorithm by encoding and decoding several state vectors and
 ! checking for differences.  It also prints the full encoding table.
-!
-! License:
-!
-! This program is free software; you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation; either version 2 of the License, or
-! (at your option) any later version.
-!
-! This program is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License along
-! with this program; if not, write to the Free Software Foundation, Inc.,
-! 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 program binenc_test
   use binenc_mod

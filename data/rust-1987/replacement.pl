@@ -3,8 +3,13 @@
 # Parses Rust's (1987) bus engine replacement data files and generates a
 # panel dataset with a single row for each replacement.
 #
-# Jason Blevins <jrblevin@sdf.lonestar.org>
-# Durham, May 7, 2008 08:24 EDT
+# Copyright (C) 2008 Jason Blevins <jrblevin@sdf.lonestar.org>
+# All rights reserved.
+#
+# This software may be modified and distributed under the terms
+# of the BSD license.  See the LICENSE file for details.
+#
+# Durham, May 7, 2008
 
 sub parse_file {
     my ($filename, $group, $make, $model, $n_bus, $n_month) = @_;

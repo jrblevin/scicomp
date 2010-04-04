@@ -1,7 +1,10 @@
-! An example of reading a simple control with labels.
+! control_file.f90 -- reading a simple control with labels
 !
-! Jason Blevins <jrblevin@sdf.lonestar.org>
-! Durham, May 6, 2008
+! Copyright (C) 2008 Jason Blevins <jrblevin@sdf.lonestar.org>
+! All rights reserved.
+!
+! This software may be modified and distributed under the terms
+! of the BSD license.  See the LICENSE file for details.
 
 program control_file
   implicit none

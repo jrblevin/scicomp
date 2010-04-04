@@ -1,5 +1,10 @@
 ! binenc_mod.f03 -- A Binomial-coefficient-based state encoding algorithm
+!
 ! Copyright (C) 2008 Jason Blevins <jrblevin@sdf.lonestar.org>
+! All rights reserved.
+!
+! This software may be modified and distributed under the terms
+! of the BSD license.  See the LICENSE file for details.
 !
 ! Description:
 !
@@ -24,22 +29,6 @@
 ! It is important that the state vector be sorted before calling
 ! encode.  This code is intended as an example and as such no error
 ! checking is performed.
-!
-! License:
-!
-! This program is free software; you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation; either version 2 of the License, or
-! (at your option) any later version.
-!
-! This program is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License along
-! with this program; if not, write to the Free Software Foundation, Inc.,
-! 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 module binenc_mod
 implicit none

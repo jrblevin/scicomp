@@ -1,7 +1,10 @@
 ! ls.f90 -- lists all files in a directory
 !
 ! Copyright (C) 2010 Jason R. Blevins
-! License: 3-clause BSD
+! All rights reserved.
+!
+! This software may be modified and distributed under the terms
+! of the BSD license.  See the LICENSE file for details.
 !
 ! This program depends on the Posix90 library:
 !

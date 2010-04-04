@@ -1,4 +1,4 @@
-!! Generates a "free(): invalid pointer" error.
+! free.f90 -- generates a "free(): invalid pointer" error
 program free
   integer, dimension(:), allocatable :: data
   integer :: i

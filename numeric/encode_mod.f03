@@ -1,5 +1,10 @@
 ! encode_mod.f03 -- A module for encoding and decoding state vectors
+!
 ! Copyright (C) 2008 Jason Blevins <jrblevin@sdf.lonestar.org>
+! All rights reserved.
+!
+! This software may be modified and distributed under the terms
+! of the BSD license.  See the LICENSE file for details.
 !
 ! Description:
 !
@@ -24,21 +29,6 @@
 ! states, one can represent the state space using $Z(L,n+1)$.  The
 ! $k$-th element of the state vector then represents the fraction of
 ! firms in state $k$.
-!
-! License:
-!
-! This program is free software: you can redistribute it and/or modify
-! it under the terms of the GNU General Public License as published by
-! the Free Software Foundation, either version 3 of the License, or
-! (at your option) any later version.
-!
-! This program is distributed in the hope that it will be useful,
-! but WITHOUT ANY WARRANTY; without even the implied warranty of
-! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-! GNU General Public License for more details.
-!
-! You should have received a copy of the GNU General Public License
-! along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 module encode_mod
   implicit none
