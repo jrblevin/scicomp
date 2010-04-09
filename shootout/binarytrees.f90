@@ -3,36 +3,146 @@
 !
 ! contributed by Jason Blevins
 ! based on the C version by Francesco Abbate
+! and mem_pool.f90 from FLIBS by Arjen Markus
 !
-! ifort -O3 -o binarytrees binarytrees.f90
+! ifort -fast -o binarytrees binarytrees.f90
 module tree
   implicit none
 
+  private
+
+  public :: node, node_check, make
+  public :: pool_initialize, pool_free, pool_acquire, pool_release
+
+  integer, parameter :: NONE = -1
+  integer, parameter :: chunk_size = 10000
+  logical, parameter :: release_asap = .true.
+
   type :: node
      integer :: item
+     integer :: id
+     integer :: index
      type(node), pointer :: left => null()
      type(node), pointer :: right => null()
   end type node
 
+  type :: pool_chunk
+     type(node), dimension(:), pointer :: data
+  end type pool_chunk
+
+  integer, dimension(:,:), pointer :: stack
+  integer :: stack_index
+  type(pool_chunk), dimension(:), pointer :: chunk
+
 contains
+
+  ! Initializes the memory pool with a single chunk.
+  subroutine pool_initialize
+    allocate(stack(chunk_size, 2))
+    stack_index = 0
+    call pool_add_chunk()
+  end subroutine pool_initialize
+
+  ! Frees the memory pool
+  subroutine pool_free
+    deallocate(stack)
+  end subroutine pool_free
+
+  subroutine stack_grow
+    integer, dimension(:,:), pointer :: temp
+    integer :: i
+    allocate(temp(size(stack,1)+chunk_size, 2))
+    do i = 1, size(stack,1)
+       temp(i,1) = stack(i,1)
+       temp(i,2) = stack(i,2)
+    end do
+    deallocate(stack)
+    stack => temp
+  end subroutine stack_grow
+
+  subroutine stack_pop(id, index)
+    integer, intent(out) :: id, index
+    if (stack_index > 0) then
+       id = stack(stack_index, 1)
+       index = stack(stack_index, 2)
+       stack_index = stack_index - 1
+    else
+       id = NONE
+       index = NONE
+    end if
+  end subroutine stack_pop
+
+  subroutine stack_push(id, index)
+    integer, intent(in) :: id, index
+    if (stack_index == size(stack,1)) then
+       call stack_grow()
+    end if
+    stack_index = stack_index + 1
+    stack(stack_index, 1) = id
+    stack(stack_index, 2) = index
+  end subroutine stack_push
+
+  subroutine pool_acquire(node_p)
+    type(node), pointer :: node_p
+    integer :: i, id, index
+
+    call stack_pop(id, index)
+    if (id == NONE) then
+       call pool_add_chunk()
+       call stack_pop(id, index)
+    end if
+
+    node_p => chunk(id)%data(index)
+    node_p%id = id
+    node_p%index = index
+  end subroutine pool_acquire
+
+  subroutine pool_release(node_p)
+    type(node), pointer :: node_p
+    call stack_push(node_p%id, node_p%index)
+    nullify(node_p)
+  end subroutine pool_release
+
+  ! Adds a new chunk to the memory pool, expanding the CHUNK array
+  ! with one extra useable array of node data.
+  subroutine pool_add_chunk()
+    type(pool_chunk), dimension(:), pointer :: newchunk
+    integer :: id, index
+
+    if (.not. associated(chunk)) then
+       allocate(chunk(1))
+       id = 1
+    else
+       allocate(newchunk(1:size(chunk)+1))
+       newchunk(1:size(chunk)) = chunk
+       deallocate(chunk)
+       chunk => newchunk
+       id = size(chunk)
+    end if
+    allocate(chunk(id)%data(chunk_size))
+
+    do index = chunk_size, 1, -1
+       call stack_push(id, index)
+    end do
+  end subroutine pool_add_chunk
 
   recursive function node_check(n) result(check)
     type(node), pointer :: n
-    integer :: lc, rc, check
+    integer :: check
 
     if (associated(n%left)) then
        check = n%item + node_check(n%left) - node_check(n%right)
     else
        check = n%item
     end if
-    deallocate(n)
+    call pool_release(n)
   end function node_check
 
   recursive subroutine make(item, depth, n)
     integer, intent(in) :: item, depth
     type(node), pointer :: n
 
-    allocate(n)
+    call pool_acquire(n)
     n%item = item
 
     if (depth > 0) then
@@ -62,6 +172,9 @@ program binarytrees
   max_depth = max(min_depth + 2, req_depth)
   stretch_depth = max_depth + 1
 
+  ! initialize memory pool
+  call pool_initialize()
+
   ! stretch tree
   call make(0, stretch_depth, stretch)
   print '(2(a,i0))', 'stretch tree of depth ', stretch_depth, &
@@ -87,4 +200,6 @@ program binarytrees
   ! deallocate long lived tree
   print '(2(a,i0))', 'long lived tree of depth ', max_depth, &
        tab // ' check: ', node_check(long_lived)
+
+  call pool_free()
 end program binarytrees
