@@ -36,7 +36,7 @@ program mandelbrot
 
   !$OMP PARALLEL DO PRIVATE(y, x, bit_num, pos, byte, Zr, Cr, Ci, inside, i)
   do y = 0, h - 1
-     bit_num = 8
+     bit_num = 8 ! when moving left to right, bits are numbered 7 to 0
      byte = 0_int8
      pos = 0
      do x = 0, w - 1
@@ -46,21 +46,22 @@ program mandelbrot
         Cr = inv_w * x - 1.5_dp
         Ci = inv_h * y - 1.0_dp
         inside = .true.
-        i = 0
-        do while(i < iter .and. inside)
+        do i = 1, iter
            Zi = 2.0 * Zr * Zi + Ci
            Zr = Tr - Ti + Cr
            Ti = Zi * Zi
            Tr = Zr * Zr
-           i = i + 1
-           inside = Tr + Ti <= limit2
+           if (Tr + Ti > limit2) then
+              inside = .false.
+              exit
+           end if
         end do
 
         ! We're in the set, set this bit to 0
         if (inside) byte = ibset(byte, bit_num)
 
         if (bit_num == 0 .or. x == w - 1) then
-           ! All bits set or end of row, so output bits
+           ! All bits set or end of row, so store full byte
            pos = pos + 1
            buf(pos,y+1) = byte
            byte = 0_int8
