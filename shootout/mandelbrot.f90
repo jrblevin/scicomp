@@ -4,7 +4,7 @@
 ! Contributed by Jason Blevins
 ! Adapted from Fortran versions by George R. Gonzalez and Simon Geard
 !
-! ifort -O3 -o mandelbrot mandelbrot.f90
+! ifort -fast -openmp -o mandelbrot mandelbrot.f90
 program mandelbrot
   implicit none
 
@@ -13,11 +13,11 @@ program mandelbrot
   integer, parameter :: iter = 50
   real(dp), parameter :: limit2 = 4.0_dp
   character(len=8) :: argv
-  integer :: w, h, x, y, i, pos = 0, bit_num = 8
-  integer(int8) :: byte = 0_int8
+  integer :: w, h, x, y, i, pos, bit_num
+  integer(int8) :: byte
   real(dp) :: inv_w, inv_h, Zi, Zr, Ti, Tr, Cr, Ci
   logical :: inside
-  integer(int8), dimension(:), allocatable :: buf
+  integer(int8), dimension(:,:), allocatable :: buf
 
   ! read dimension from command line
   call get_command_argument(1, argv)
@@ -25,7 +25,7 @@ program mandelbrot
   h = w
 
   ! allocate output buffer
-  allocate(buf(ceiling(w/8.0_dp) * h))
+  allocate(buf(ceiling(w/8.0_dp),h))
 
   ! precalculate constants
   inv_w = 2.0_dp / w
@@ -34,7 +34,11 @@ program mandelbrot
   ! pbm header
   write(*,'("P4",/,i0," ",i0)') w, h
 
+  !$OMP PARALLEL DO PRIVATE(y, x, bit_num, pos, byte, Zr, Cr, Ci, inside, i)
   do y = 0, h - 1
+     bit_num = 8
+     byte = 0_int8
+     pos = 0
      do x = 0, w - 1
         bit_num = bit_num - 1
 
@@ -58,14 +62,17 @@ program mandelbrot
         if (bit_num == 0 .or. x == w - 1) then
            ! All bits set or end of row, so output bits
            pos = pos + 1
-           buf(pos) = byte
+           buf(pos,y+1) = byte
            byte = 0_int8
            bit_num = 8
         end if
      end do
   end do
+  !$OMP END PARALLEL DO
 
   ! print output
-  write(*, '(10000000a1)',advance='no') buf(1:pos)
+  do y = 1, h
+     write(*, '(10000000a1)', advance='no') buf(:,y)
+  end do
   deallocate(buf)
 end program mandelbrot
