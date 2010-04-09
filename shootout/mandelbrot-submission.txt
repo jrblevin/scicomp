@@ -1,0 +1,16 @@
+Group: mandelbrot
+
+Category: Fortran Intel
+
+Summary: Fortran mandelbrot Jason Blevins 2010-04-09
+
+Description:
+
+The existing Fortran implementations of mandelbrot are giving "bad
+output."  This seems to be due to some rounding issues, which this
+version fixes by explicitly declaring a real kind parameter and using
+it throughout to ensure that all calculations are carried out in
+double precision.  This version also makes use of OpenMP for use
+in the quad-core benchmarks, uses Fortran 95's bit twiddling
+intrinsic functions, and tweaks some of the inner loop tests to
+improve performance.
