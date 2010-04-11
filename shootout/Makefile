@@ -80,6 +80,33 @@ bench_mandelbrot: $(MANDEL_OWN) $(MANDEL_BENCH)
 	@echo "own:"
 	@time ./$(MANDEL_OWN) 16000 > /dev/null
 
+#--- revcomp ------------------------------------------------------------------
+
+REVCOMP_BENCH_INPUT=revcomp-input25000000.out
+REVCOMP_BENCH=revcomp.gcc-4.gcc_run
+REVCOMP_OWN=revcomp.ifc-2.ifc_run
+
+revcomp.ifc-2.ifc_run: revcomp.ifc-2.f90
+	$(FC) -O3 -static $< -o $@
+
+revcomp.gcc-4.gcc_run: revcomp.gcc-4.c
+	$(CC) -pipe -Wall -O3 -fomit-frame-pointer -march=native $< -o $@
+
+test_revcomp: $(REVCOMP_OWN)
+	@./$(REVCOMP_OWN) < fasta-output.txt > $(REVCOMP_OWN).out
+	@diff revcomp-output.txt $(REVCOMP_OWN).out
+	@rm -f $(REVCOMP_OWN).out
+
+$(REVCOMP_BENCH_INPUT): $(FASTA_BENCH)
+	@echo "generating benchmark input file..."
+	@./$(FASTA_BENCH) 25000000 > $(REVCOMP_BENCH_INPUT)
+
+bench_revcomp: $(REVCOMP_OWN) $(REVCOMP_BENCH) $(REVCOMP_BENCH_INPUT)
+	@echo "benchmark:"
+	@time ./$(REVCOMP_BENCH) < $(REVCOMP_BENCH_INPUT) > /dev/null
+	@echo "own:"
+	@time ./$(REVCOMP_OWN) < $(REVCOMP_BENCH_INPUT) > /dev/null
+
 #--- Miscellaneous ------------------------------------------------------------
 
 clean:
