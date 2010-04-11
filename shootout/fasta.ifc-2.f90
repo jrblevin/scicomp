@@ -1,3 +1,9 @@
+! The Great Computer Language Shootout
+! http://shootout.alioth.debian.org/
+!
+! Contributed by Jason Blevins
+! Adapted from the C version by Petr Prokhorenkov
+
 program fasta
   implicit none
 
