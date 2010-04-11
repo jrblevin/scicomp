@@ -28,6 +28,31 @@ bench_binarytrees: $(BIN_OWN) $(BIN_BENCH)
 	@echo "own:"
 	@time ./$(BIN_OWN) 20 > /dev/null
 
+#--- fasta --------------------------------------------------------------------
+
+FASTA_BENCH=fasta.gcc-3.gcc_run
+FASTA_OWN=fasta.ifc-2.ifc_run
+
+fasta.ifc-1.ifc_run: fasta.ifc-1.f90
+	$(FC) -O3 -static -o $@ $<
+
+fasta.ifc-2.ifc_run: fasta.ifc-2.f90
+	$(FC) -O3 -static -fast -ipo -no-prec-div -o $@ $<
+
+fasta.gcc-3.gcc_run: fasta.gcc-3.c
+	$(CC) -pipe -Wall -O3 -fomit-frame-pointer -march=native -std=c99 \
+		-mfpmath=sse -msse3 -o $@ $<
+
+test_fasta: $(FASTA_OWN)
+	@./$(FASTA_OWN) 1000 > $(FASTA_OWN).out
+	@diff fasta-output.txt $(FASTA_OWN).out
+	@rm -f $(FASTA_OWN).out
+
+bench_fasta: $(FASTA_OWN) $(FASTA_BENCH)
+	@echo "benchmark:"
+	@time ./$(FASTA_BENCH) 25000000 > /dev/null
+	@echo "own:"
+	@time ./$(FASTA_OWN) 25000000 > /dev/null
 
 #--- mandelbrot ---------------------------------------------------------------
 
@@ -55,7 +80,7 @@ bench_mandelbrot: $(MANDEL_OWN) $(MANDEL_BENCH)
 	@echo "own:"
 	@time ./$(MANDEL_OWN) 16000 > /dev/null
 
-#--- miscellaneous ------------------------------------------------------------
+#--- Miscellaneous ------------------------------------------------------------
 
 clean:
 	rm -f *_run *.out *.mod *.o
