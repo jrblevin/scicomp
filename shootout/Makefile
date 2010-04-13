@@ -37,7 +37,7 @@ fasta.ifc-1.ifc_run: fasta.ifc-1.f90
 	$(FC) -O3 -static -o $@ $<
 
 fasta.ifc-2.ifc_run: fasta.ifc-2.f90
-	$(FC) -O3 -static -fast -ipo -no-prec-div -o $@ $<
+	$(FC) -O3 -static -fast -xSSE3 -o $@ $<
 
 fasta.gcc-3.gcc_run: fasta.gcc-3.c
 	$(CC) -pipe -Wall -O3 -fomit-frame-pointer -march=native -std=c99 \
@@ -63,7 +63,7 @@ mandelbrot.ifc-1.ifc_run: mandelbrot.ifc-1.f90
 	$(FC) -O3 -static $< -o $@
 
 mandelbrot.ifc-4.ifc_run: mandelbrot.ifc-4.f90
-	$(FC) -O3 -static -fast -openmp $< -o $@
+	$(FC) -O3 -static -fast -xSSSE3 -openmp $< -o $@
 
 mandelbrot.gcc-6.gcc_run: mandelbrot.gcc-6.c
 	$(CC) -O3 -fomit-frame-pointer -march=native -D_ISOC9X_SOURCE \
@@ -87,7 +87,7 @@ REVCOMP_BENCH=revcomp.gcc-4.gcc_run
 REVCOMP_OWN=revcomp.ifc-2.ifc_run
 
 revcomp.ifc-2.ifc_run: revcomp.ifc-2.f90
-	$(FC) -O3 -static $< -o $@
+	$(FC) -O3 -static -fast -xSSSE3 $< -o $@
 
 revcomp.gcc-4.gcc_run: revcomp.gcc-4.c
 	$(CC) -pipe -Wall -O3 -fomit-frame-pointer -march=native $< -o $@
