@@ -7,10 +7,10 @@ BIN_BENCH=binarytrees.gcc-7.gcc_run
 BIN_OWN=binarytrees.ifc-2.ifc_run
 
 binarytrees.ifc-1.ifc_run: binarytrees.ifc-1.f90
-	$(FC) -O3 -static -u -what -u -what $< -o $@
+	$(FC) -fast $< -o $@
 
 binarytrees.ifc-2.ifc_run: binarytrees.ifc-2.f90
-	$(FC) -O3 -static -fast -ipo -no-prec-div $< -o $@
+	$(FC) -fast $< -o $@
 
 binarytrees.gcc-7.gcc_run: binarytrees.gcc-7.c
 	$(CC) -pipe -Wall -O3 -fomit-frame-pointer -march=native -fopenmp \
@@ -34,10 +34,10 @@ FASTA_BENCH=fasta.gcc-3.gcc_run
 FASTA_OWN=fasta.ifc-2.ifc_run
 
 fasta.ifc-1.ifc_run: fasta.ifc-1.f90
-	$(FC) -O3 -static -o $@ $<
+	$(FC) -fast -o $@ $<
 
 fasta.ifc-2.ifc_run: fasta.ifc-2.f90
-	$(FC) -O3 -static -fast -xSSE3 -o $@ $<
+	$(FC) -fast -o $@ $<
 
 fasta.gcc-3.gcc_run: fasta.gcc-3.c
 	$(CC) -pipe -Wall -O3 -fomit-frame-pointer -march=native -std=c99 \
@@ -60,10 +60,10 @@ MANDEL_BENCH=mandelbrot.gcc-6.gcc_run
 MANDEL_OWN=mandelbrot.ifc-4.ifc_run
 
 mandelbrot.ifc-1.ifc_run: mandelbrot.ifc-1.f90
-	$(FC) -O3 -static $< -o $@
+	$(FC) -fast $< -o $@
 
 mandelbrot.ifc-4.ifc_run: mandelbrot.ifc-4.f90
-	$(FC) -O3 -static -fast -xSSSE3 -openmp $< -o $@
+	$(FC) -fast -openmp $< -o $@
 
 mandelbrot.gcc-6.gcc_run: mandelbrot.gcc-6.c
 	$(CC) -O3 -fomit-frame-pointer -march=native -D_ISOC9X_SOURCE \
@@ -87,7 +87,7 @@ REVCOMP_BENCH=revcomp.gcc-4.gcc_run
 REVCOMP_OWN=revcomp.ifc-2.ifc_run
 
 revcomp.ifc-2.ifc_run: revcomp.ifc-2.f90
-	$(FC) -O3 -static -fast -xSSSE3 $< -o $@
+	$(FC) -fast $< -o $@
 
 revcomp.gcc-4.gcc_run: revcomp.gcc-4.c
 	$(CC) -pipe -Wall -O3 -fomit-frame-pointer -march=native $< -o $@
