@@ -13,38 +13,36 @@ program mandelbrot
   integer, parameter :: iter = 50
   real(dp), parameter :: limit2 = 4.0_dp
   character(len=8) :: argv
-  integer :: w, h, x, y, i, pos, bit_num
+  integer :: n, x, y, i, pos, bit_num
   integer(int8) :: byte
-  real(dp) :: inv_w, inv_h, Zi, Zr, Ti, Tr, Cr, Ci
+  real(dp) :: inv_2n, Zi, Zr, Ti, Tr, Cr, Ci
   logical :: inside
   integer(int8), dimension(:,:), allocatable :: buf
 
   ! read dimension from command line
   call get_command_argument(1, argv)
-  read(argv, *) w
-  h = w
+  read(argv, *) n
 
   ! allocate output buffer
-  allocate(buf(ceiling(w/8.0_dp),h))
+  allocate(buf(ceiling(n / 8.0_dp), n))
 
   ! precalculate constants
-  inv_w = 2.0_dp / w
-  inv_h = 2.0_dp / h
+  inv_2n = 2.0_dp / n
 
   ! pbm header
-  write(*,'("P4",/,i0," ",i0)') w, h
+  write(*,'("P4",/,i0," ",i0)') n, n
 
   !$OMP PARALLEL DO PRIVATE(y, x, bit_num, pos, byte, Zr, Cr, Ci, inside, i)
-  do y = 0, h - 1
+  do y = 0, n - 1
      bit_num = 8 ! when moving left to right, bits are numbered 7 to 0
      byte = 0_int8
      pos = 0
-     do x = 0, w - 1
+     do x = 0, n - 1
         bit_num = bit_num - 1
 
         Zr = 0.0_dp; Zi = 0.0_dp; Tr = 0.0_dp; Ti = 0.0_dp;
-        Cr = inv_w * x - 1.5_dp
-        Ci = inv_h * y - 1.0_dp
+        Cr = inv_2n * x - 1.5_dp
+        Ci = inv_2n * y - 1.0_dp
         inside = .true.
         do i = 1, iter
            Zi = 2.0 * Zr * Zi + Ci
@@ -60,10 +58,10 @@ program mandelbrot
         ! We're in the set, set this bit to 0
         if (inside) byte = ibset(byte, bit_num)
 
-        if (bit_num == 0 .or. x == w - 1) then
+        if (bit_num == 0 .or. x == n - 1) then
            ! All bits set or end of row, so store full byte
            pos = pos + 1
-           buf(pos,y+1) = byte
+           buf(pos, y + 1) = byte
            byte = 0_int8
            bit_num = 8
         end if
@@ -72,8 +70,8 @@ program mandelbrot
   !$OMP END PARALLEL DO
 
   ! print output
-  do y = 1, h
-     write(*, '(10000000a1)', advance='no') buf(:,y)
+  do y = 1, n
+     write(*, '(10000000a1)', advance='no') buf(:, y)
   end do
   deallocate(buf)
 end program mandelbrot
