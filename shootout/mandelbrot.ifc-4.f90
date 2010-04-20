@@ -16,7 +16,6 @@ program mandelbrot
   integer :: n, x, y, i, pos, bit_num
   integer(int8) :: byte
   real(dp) :: inv_2n, Zi, Zr, Ti, Tr, Cr, Ci
-  logical :: inside
   integer(int8), dimension(:,:), allocatable :: buf
 
   ! read dimension from command line
@@ -32,7 +31,7 @@ program mandelbrot
   ! pbm header
   write(*,'("P4",/,i0," ",i0)') n, n
 
-  !$OMP PARALLEL DO PRIVATE(y, x, bit_num, pos, byte, Zr, Cr, Ci, inside, i)
+  !$OMP PARALLEL DO PRIVATE(y, x, bit_num, pos, byte, Zr, Cr, Ci, i)
   do y = 0, n - 1
      bit_num = 8 ! when moving left to right, bits are numbered 7 to 0
      byte = 0_int8
@@ -43,20 +42,18 @@ program mandelbrot
         Zr = 0.0_dp; Zi = 0.0_dp; Tr = 0.0_dp; Ti = 0.0_dp;
         Cr = inv_2n * x - 1.5_dp
         Ci = inv_2n * y - 1.0_dp
-        inside = .true.
         do i = 1, iter
            Zi = 2.0 * Zr * Zi + Ci
            Zr = Tr - Ti + Cr
            Ti = Zi * Zi
            Tr = Zr * Zr
            if (Tr + Ti > limit2) then
-              inside = .false.
               exit
            end if
         end do
 
         ! We're in the set, set this bit to 0
-        if (inside) byte = ibset(byte, bit_num)
+        if (i > iter) byte = ibset(byte, bit_num)
 
         if (bit_num == 0 .or. x == n - 1) then
            ! All bits set or end of row, so store full byte
