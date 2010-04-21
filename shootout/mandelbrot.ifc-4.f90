@@ -36,12 +36,16 @@ program mandelbrot
      bit_num = 8 ! when moving left to right, bits are numbered 7 to 0
      byte = 0_int8
      pos = 0
+     Ci = inv_2n * y - 1.0_dp
      do x = 0, n - 1
         bit_num = bit_num - 1
 
-        Zr = 0.0_dp; Zi = 0.0_dp; Tr = 0.0_dp; Ti = 0.0_dp;
+        Zr = 0.0_dp
+        Zi = 0.0_dp
+        Tr = 0.0_dp
+        Ti = 0.0_dp
+
         Cr = inv_2n * x - 1.5_dp
-        Ci = inv_2n * y - 1.0_dp
         do i = 1, iter
            Zi = 2.0 * Zr * Zi + Ci
            Zr = Tr - Ti + Cr
