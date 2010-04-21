@@ -13,7 +13,7 @@ program mandelbrot
   integer, parameter :: iter = 50
   real(dp), parameter :: limit2 = 4.0_dp
   character(len=8) :: argv
-  integer :: n, x, y, i, pos, bit_num
+  integer :: n, x, y, i, j, pos
   integer(int8) :: byte
   real(dp) :: inv_2n, Zi, Zr, Ti, Tr, Cr, Ci
   integer(int8), dimension(:,:), allocatable :: buf
@@ -33,40 +33,45 @@ program mandelbrot
 
   !$OMP PARALLEL DO DEFAULT(PRIVATE) SHARED(n, inv_2n, buf)
   do y = 0, n - 1
-     bit_num = 8 ! when moving left to right, bits are numbered 7 to 0
-     byte = 0_int8
      pos = 0
      Ci = inv_2n * y - 1.0_dp
-     do x = 0, n - 1
-        bit_num = bit_num - 1
 
-        Zr = 0.0_dp
-        Zi = 0.0_dp
-        Tr = 0.0_dp
-        Ti = 0.0_dp
+     do x = 0, n - 1, 8 ! ASSUMING DIVISIBLE BY 8
 
-        Cr = inv_2n * x - 1.5_dp
-        do i = 1, iter
-           Zi = 2.0 * Zr * Zi + Ci
-           Zr = Tr - Ti + Cr
-           Ti = Zi * Zi
-           Tr = Zr * Zr
-           if (Tr + Ti > limit2) then
-              exit
+        byte = 0_int8
+
+        do j = 0, 7
+
+           Zr = 0.0_dp
+           Zi = 0.0_dp
+           Tr = 0.0_dp
+           Ti = 0.0_dp
+
+           Cr = inv_2n * (x + j) - 1.5_dp
+           do i = 1, iter
+              Zi = 2.0_dp * Zr * Zi + Ci
+              Zr = Tr - Ti + Cr
+              Ti = Zi * Zi
+              Tr = Zr * Zr
+              if (Tr + Ti > limit2) then
+                 exit
+              end if
+           end do
+
+           ! We're in the set, set this bit to 0
+!           if (i > iter) byte = ibset(byte, 7 - j)
+           byte = ishft(byte, 1)
+           if (i > iter) then
+              byte = ior(byte, 1)
            end if
+
         end do
 
-        ! We're in the set, set this bit to 0
-        if (i > iter) byte = ibset(byte, bit_num)
+        pos = pos + 1
+        buf(pos, y + 1) = byte
 
-        if (bit_num == 0 .or. x == n - 1) then
-           ! All bits set or end of row, so store full byte
-           pos = pos + 1
-           buf(pos, y + 1) = byte
-           byte = 0_int8
-           bit_num = 8
-        end if
      end do
+
   end do
   !$OMP END PARALLEL DO
 
