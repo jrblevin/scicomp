@@ -31,7 +31,7 @@ program mandelbrot
   ! pbm header
   write(*,'("P4",/,i0," ",i0)') n, n
 
-  !$OMP PARALLEL DO PRIVATE(y, x, bit_num, pos, byte, Zr, Cr, Ci, i)
+  !$OMP PARALLEL DO DEFAULT(PRIVATE) SHARED(n, inv_2n, buf)
   do y = 0, n - 1
      bit_num = 8 ! when moving left to right, bits are numbered 7 to 0
      byte = 0_int8
