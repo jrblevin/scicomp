@@ -6,7 +6,7 @@ program memleak
 contains
 
   subroutine foo
-    integer, dimension(:), allocatable :: x
+    integer, dimension(:), pointer :: x
 
     allocate(x(10))
 
