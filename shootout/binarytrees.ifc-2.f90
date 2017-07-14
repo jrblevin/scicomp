@@ -15,7 +15,7 @@ module tree
   public :: pool_initialize, pool_free, pool_acquire, pool_release
 
   integer, parameter :: NONE = -1
-  integer, parameter :: chunk_size = 10000
+  integer, parameter :: chunk_size = 100
   logical, parameter :: release_asap = .true.
 
   type :: node
@@ -26,13 +26,15 @@ module tree
      type(node), pointer :: right => null()
   end type node
 
-  type :: pool_chunk
+  type :: chunk_node
+     integer :: id
      type(node), dimension(:), pointer :: data
-  end type pool_chunk
+     type(chunk_node), pointer :: next => null()
+  end type chunk_node
 
   integer, dimension(:,:), pointer :: stack
   integer :: stack_index
-  type(pool_chunk), dimension(:), pointer :: chunk
+  type(chunk_node), pointer :: chunk_list
 
 contains
 
@@ -84,7 +86,8 @@ contains
 
   subroutine pool_acquire(node_p)
     type(node), pointer :: node_p
-    integer :: i, id, index
+    type(chunk_node), pointer :: cur
+    integer :: id, index
 
     call stack_pop(id, index)
     if (id == NONE) then
@@ -92,7 +95,15 @@ contains
        call stack_pop(id, index)
     end if
 
-    node_p => chunk(id)%data(index)
+    print '(a,i0)', 'pool_acquire: searching for id ', id
+    cur => chunk_list
+    do while (cur%id /= id)
+       print '(a,i0)', 'skipping ', cur%id
+       cur => cur%next
+    end do
+    print '(a,i0)', 'stopped at ', cur%id
+    print '(a,i0)', 'index ', index
+    node_p => cur%data(index)
     node_p%id = id
     node_p%index = index
   end subroutine pool_acquire
@@ -106,20 +117,29 @@ contains
   ! Adds a new chunk to the memory pool, expanding the CHUNK array
   ! with one extra useable array of node data.
   subroutine pool_add_chunk()
-    type(pool_chunk), dimension(:), pointer :: newchunk
+    type(chunk_node), pointer :: cur
     integer :: id, index
 
-    if (.not. associated(chunk)) then
-       allocate(chunk(1))
-       id = 1
+    print '(a)', 'adding chunk'
+
+    id = 1
+    if (.not. associated(chunk_list)) then
+       allocate(chunk_list)
+       cur => chunk_list
+       cur%id = id
     else
-       allocate(newchunk(1:size(chunk)+1))
-       newchunk(1:size(chunk)) = chunk
-       deallocate(chunk)
-       chunk => newchunk
-       id = size(chunk)
+       cur => chunk_list
+       do while (associated(cur%next))
+          id = id + 1
+          cur => cur%next
+       end do
+       allocate(cur%next)
+       cur => cur%next
+       cur%id = id
     end if
-    allocate(chunk(id)%data(chunk_size))
+
+    allocate(cur%data(chunk_size))
+    nullify(cur%next)
 
     do index = chunk_size, 1, -1
        call stack_push(id, index)
