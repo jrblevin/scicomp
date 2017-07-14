@@ -1,0 +1,5 @@
+module CSum {
+    header "./sum.h"
+    link "sum"
+    export *
+}
